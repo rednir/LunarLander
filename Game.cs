@@ -5,7 +5,7 @@ namespace LunarLander
 {
     public class Game : Node
     {
-        private const float FUEL_POWER = 0.5f;
+        private const float FUEL_POWER = 0.1f;
 
         private bool isGameOver;
 
@@ -21,9 +21,12 @@ namespace LunarLander
 
         private ParallaxBackground StarsParallax;
 
+        private Sprite Background;
+
         public override void _Ready()
         {
             StarsParallax = GetNode<ParallaxBackground>("StarsParallax");
+            Background = GetNode<Sprite>("CanvasLayer/Background");
         }
 
         public override void _PhysicsProcess(float delta)
@@ -31,17 +34,19 @@ namespace LunarLander
             if (isGameOver)
                 return;
 
+            // TODO: Background offset
             StarsParallax.ScrollOffset = new Vector2(0, altitude);
 
-            velocity -= 0.02f;
+            velocity -= 0.08f;
             altitude += velocity;
 
-            if (isUserHoldingDown && fuelRemaining > 0)
+            if (isUserHoldingDown && fuelRemaining > 0 && pendingFuel < 100)
             {
                 pendingFuel += 10;
                 fuelRemaining -= 10;
             }
-            else if (pendingFuel > 0)
+
+            if (!isUserHoldingDown && pendingFuel > 0)
             {
                 velocity += pendingFuel * FUEL_POWER;
                 pendingFuel = 0;
