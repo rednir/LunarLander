@@ -1,3 +1,18 @@
-[gd_scene format=2]
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Game.cs" type="Script" id=1]
 
 [node name="Game" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="Info" type="Label" parent="."]
+margin_left = 49.0
+margin_top = 43.0
+margin_right = 184.0
+margin_bottom = 125.0
+rect_scale = Vector2( 2, 2 )
+text = "Velocity:
+Altitude:
+FuelRemaining:
+PendingFuel:
+IsUserHoldingDown: "

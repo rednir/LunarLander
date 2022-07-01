@@ -1,21 +1,60 @@
 using Godot;
 using System;
 
-public class Game : Node
+namespace LunarLander
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
+    public class Game : Node
     {
-        
-    }
+        private const float FUEL_POWER = 0.5f;
 
-//  // Called every frame. 'delta' is the elapsed time since the previous frame.
-//  public override void _Process(float delta)
-//  {
-//      
-//  }
+        private bool isGameOver;
+
+        private bool isUserHoldingDown;
+
+        private float velocity = 0;
+
+        private float altitude = 1000;
+
+        private float fuelRemaining = 1000;
+
+        private float pendingFuel = 0;
+
+        public override void _Ready()
+        {
+        }
+
+        public override void _PhysicsProcess(float delta)
+        {
+            if (isGameOver)
+                return;
+
+            velocity -= 0.02f;
+            altitude += velocity;
+
+            if (isUserHoldingDown && fuelRemaining > 0)
+            {
+                pendingFuel += 10;
+                fuelRemaining -= 10;
+            }
+            else if (pendingFuel > 0)
+            {
+                velocity += pendingFuel * FUEL_POWER;
+                pendingFuel = 0;
+            }
+
+            GetNode<Label>("Info").Text = $"Velocity:{velocity}\nAltitude:{altitude}\nFuelRemaining:{fuelRemaining}\nPendingFuel:{pendingFuel}\nIsUserHoldingDown:{isUserHoldingDown}";
+
+            if (altitude <= 0)
+                EndGame();
+        }
+
+        public override void _Input(InputEvent inputEvent) =>
+            isUserHoldingDown = (inputEvent as InputEventMouseButton)?.Pressed ?? false;
+
+        private void EndGame()
+        {
+            isGameOver = true;
+            altitude = 0;
+        }
+    }
 }
