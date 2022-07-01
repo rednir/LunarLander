@@ -19,14 +19,19 @@ namespace LunarLander
 
         private float pendingFuel = 0;
 
+        private ParallaxBackground StarsParallax;
+
         public override void _Ready()
         {
+            StarsParallax = GetNode<ParallaxBackground>("StarsParallax");
         }
 
         public override void _PhysicsProcess(float delta)
         {
             if (isGameOver)
                 return;
+
+            StarsParallax.ScrollOffset = new Vector2(0, altitude);
 
             velocity -= 0.02f;
             altitude += velocity;
