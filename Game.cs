@@ -23,10 +23,13 @@ namespace LunarLander
 
         private Sprite Background;
 
+        private AnimationPlayer RocketAnimationPlayer;
+
         public override void _Ready()
         {
             StarsParallax = GetNode<ParallaxBackground>("StarsParallax");
             Background = GetNode<Sprite>("CanvasLayer/Background");
+            RocketAnimationPlayer = GetNode<AnimationPlayer>("Rocket/AnimationPlayer");
         }
 
         public override void _PhysicsProcess(float delta)
@@ -50,6 +53,7 @@ namespace LunarLander
             {
                 velocity += pendingFuel * FUEL_POWER;
                 pendingFuel = 0;
+                RocketAnimationPlayer.Play("boost");
             }
 
             GetNode<Label>("Info").Text = $"Velocity:{velocity}\nAltitude:{altitude}\nFuelRemaining:{fuelRemaining}\nPendingFuel:{pendingFuel}\nIsUserHoldingDown:{isUserHoldingDown}";
@@ -58,8 +62,21 @@ namespace LunarLander
                 EndGame();
         }
 
-        public override void _Input(InputEvent inputEvent) =>
-            isUserHoldingDown = (inputEvent as InputEventMouseButton)?.Pressed ?? false;
+        public override void _Input(InputEvent inputEvent)
+        {
+            if (!isGameOver && inputEvent is InputEventScreenTouch touchEvent)
+            {
+                if (touchEvent.Pressed)
+                {
+                    isUserHoldingDown = true;
+                    RocketAnimationPlayer.Play("holding");
+                }
+                else
+                {
+                    isUserHoldingDown = false;
+                }
+            }
+        }
 
         private void EndGame()
         {
