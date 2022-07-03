@@ -7,6 +7,8 @@ namespace LunarLander
     {
         private const float FUEL_POWER = 0.1f;
 
+        private const float COOLDOWN_TIME = 1f;
+
         private bool isGameOver;
 
         private bool isUserHoldingDown;
@@ -18,6 +20,8 @@ namespace LunarLander
         private float fuelRemaining = 1000;
 
         private float pendingFuel = 0;
+
+        private float timeSinceLastBoost;
 
         private ParallaxBackground StarsParallax;
 
@@ -56,6 +60,8 @@ namespace LunarLander
             velocity -= 0.08f;
             altitude += velocity;
 
+            timeSinceLastBoost += delta;
+
             if (isUserHoldingDown && fuelRemaining > 0 && pendingFuel < 100)
             {
                 pendingFuel += 10;
@@ -66,15 +72,16 @@ namespace LunarLander
             {
                 velocity += pendingFuel * FUEL_POWER;
                 pendingFuel = 0;
+                timeSinceLastBoost = 0;
                 RocketAnimationPlayer.Play("boost");
             }
 
-            GetNode<Label>("Info").Text = $"Velocity:{velocity}\nFuelRemaining:{fuelRemaining}\nPendingFuel:{pendingFuel}\nIsUserHoldingDown:{isUserHoldingDown}";
+            GetNode<Label>("Info").Text = $"Velocity:{velocity}\nFuelRemaining:{fuelRemaining}\nPendingFuel:{pendingFuel}\nTimeSinceLastBoost:{timeSinceLastBoost}\nIsUserHoldingDown:{isUserHoldingDown}";
         }
 
         public override void _Input(InputEvent inputEvent)
         {
-            if (!isGameOver && inputEvent is InputEventScreenTouch touchEvent)
+            if (!isGameOver && inputEvent is InputEventScreenTouch touchEvent && timeSinceLastBoost > COOLDOWN_TIME)
             {
                 if (touchEvent.Pressed && fuelRemaining > 0)
                 {
