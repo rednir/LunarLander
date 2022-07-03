@@ -81,6 +81,9 @@ namespace LunarLander
 
         public override void _Input(InputEvent inputEvent)
         {
+            if (inputEvent.IsActionPressed("restart"))
+                GetTree().ReloadCurrentScene();
+
             if (!isGameOver && inputEvent is InputEventScreenTouch touchEvent && timeSinceLastBoost > COOLDOWN_TIME)
             {
                 if (touchEvent.Pressed && fuelRemaining > 0)
