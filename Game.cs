@@ -69,7 +69,7 @@ namespace LunarLander
                 RocketAnimationPlayer.Play("boost");
             }
 
-            GetNode<Label>("Info").Text = $"Velocity:{velocity}\nAltitude:{altitude}\nFuelRemaining:{fuelRemaining}\nPendingFuel:{pendingFuel}\nIsUserHoldingDown:{isUserHoldingDown}";
+            GetNode<Label>("Info").Text = $"Velocity:{velocity}\nFuelRemaining:{fuelRemaining}\nPendingFuel:{pendingFuel}\nIsUserHoldingDown:{isUserHoldingDown}";
         }
 
         public override void _Input(InputEvent inputEvent)
