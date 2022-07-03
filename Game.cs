@@ -25,11 +25,19 @@ namespace LunarLander
 
         private AnimationPlayer RocketAnimationPlayer;
 
+        private ProgressBar AltitudeProgressBar;
+
+        private Label AltitudeLabel;
+
         public override void _Ready()
         {
             StarsParallax = GetNode<ParallaxBackground>("StarsParallax");
-            Background = GetNode<Sprite>("CanvasLayer/Background");
+            Background = GetNode<Sprite>("BackgroundLayer/Background");
             RocketAnimationPlayer = GetNode<AnimationPlayer>("Rocket/AnimationPlayer");
+            AltitudeProgressBar = GetNode<ProgressBar>("HUD/Altitude/ProgressBar");
+            AltitudeLabel = GetNode<Label>("HUD/Altitude/Label");
+
+            AltitudeProgressBar.MaxValue = 1000;
         }
 
         public override void _PhysicsProcess(float delta)
@@ -37,8 +45,13 @@ namespace LunarLander
             if (isGameOver)
                 return;
 
+            if (altitude <= 0)
+                EndGame();
+
             // TODO: Background offset
             StarsParallax.ScrollOffset = new Vector2(0, altitude);
+            AltitudeProgressBar.Value = altitude;
+            AltitudeLabel.Text = $"{(int)altitude}m";
 
             velocity -= 0.08f;
             altitude += velocity;
@@ -57,16 +70,13 @@ namespace LunarLander
             }
 
             GetNode<Label>("Info").Text = $"Velocity:{velocity}\nAltitude:{altitude}\nFuelRemaining:{fuelRemaining}\nPendingFuel:{pendingFuel}\nIsUserHoldingDown:{isUserHoldingDown}";
-
-            if (altitude <= 0)
-                EndGame();
         }
 
         public override void _Input(InputEvent inputEvent)
         {
             if (!isGameOver && inputEvent is InputEventScreenTouch touchEvent)
             {
-                if (touchEvent.Pressed)
+                if (touchEvent.Pressed && fuelRemaining > 0)
                 {
                     isUserHoldingDown = true;
                     RocketAnimationPlayer.Play("holding");
