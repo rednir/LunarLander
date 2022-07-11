@@ -5,13 +5,7 @@ namespace LunarLander
 {
     public class Game : Node
     {
-        private const float FUEL_POWER = 0.15f;
-
-        private float velocity = 0;
-
-        private float altitude = 1000;
-
-        private float fuelRemaining = 1000;
+        private readonly GameLogic Logic = new GameLogic();
 
         private ParallaxBackground StarsParallax;
 
@@ -36,7 +30,7 @@ namespace LunarLander
 
         public override void _PhysicsProcess(float delta)
         {
-            if (altitude <= 0)
+            if (Logic.Altitude <= 0)
                 EndGame();
 
             UpdateHud();
@@ -51,17 +45,16 @@ namespace LunarLander
         private void UpdateHud()
         {
             // TODO: background offset
-            StarsParallax.ScrollOffset = new Vector2(0, altitude);
-            AltitudeProgressBar.Value = altitude;
-            AltitudeLabel.Text = $"{(int)altitude}m";
+            StarsParallax.ScrollOffset = new Vector2(0, Logic.Altitude);
+            AltitudeProgressBar.Value = Logic.Altitude;
+            AltitudeLabel.Text = $"{(int)Logic.Altitude}m";
 
             // TODO: should be removed or hidden
-            GetNode<Label>("Info").Text = $"Velocity:{velocity}\nFuelRemaining:{fuelRemaining}";
+            GetNode<Label>("Info").Text = $"Velocity:{Logic.Velocity}\nFuelRemaining:{Logic.FuelRemaining}";
         }
 
         private void EndGame()
         {
-            altitude = 0;
         }
     }
 }
