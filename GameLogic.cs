@@ -4,7 +4,7 @@ namespace LunarLander
 {
     public class GameLogic
     {
-        private const float FUEL_POWER = 0.12f;
+        private const float FUEL_POWER = 0.1f;
 
         public float Velocity { get; private set; } = 0;
 

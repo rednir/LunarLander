@@ -58,8 +58,9 @@ namespace LunarLander
 
             if (isUserHoldingDown && pendingFuelToBurn < Logic.FuelRemaining)
             {
-                // TODO: exponential
-                pendingFuelToBurn += delta * 300;
+                // Don't start increasing pending fuel immediately, so
+                // it's easier for the user to burn zero fuel.
+                pendingFuelToBurn += pendingFuelToBurn > 0.03 ? 2 : 0.001f;
                 RocketAnimationPlayer.Play("holding");
             }
             else if (pendingFuelToBurn > 0)
