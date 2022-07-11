@@ -5,23 +5,13 @@ namespace LunarLander
 {
     public class Game : Node
     {
-        private const float FUEL_POWER = 0.1f;
-
-        private const float COOLDOWN_TIME = 1f;
-
-        private bool isGameOver;
-
-        private bool isUserHoldingDown;
+        private const float FUEL_POWER = 0.15f;
 
         private float velocity = 0;
 
         private float altitude = 1000;
 
         private float fuelRemaining = 1000;
-
-        private float pendingFuel = 0;
-
-        private float timeSinceLastBoost;
 
         private ParallaxBackground StarsParallax;
 
@@ -46,61 +36,31 @@ namespace LunarLander
 
         public override void _PhysicsProcess(float delta)
         {
-            if (isGameOver)
-                return;
-
             if (altitude <= 0)
                 EndGame();
 
-            // TODO: Background offset
-            StarsParallax.ScrollOffset = new Vector2(0, altitude);
-            AltitudeProgressBar.Value = altitude;
-            AltitudeLabel.Text = $"{(int)altitude}m";
-
-            velocity -= 0.08f;
-            altitude += velocity;
-
-            timeSinceLastBoost += delta;
-
-            if (isUserHoldingDown && fuelRemaining > 0 && pendingFuel < 100)
-            {
-                pendingFuel += 10;
-                fuelRemaining -= 10;
-            }
-
-            if (!isUserHoldingDown && pendingFuel > 0)
-            {
-                velocity += pendingFuel * FUEL_POWER;
-                pendingFuel = 0;
-                timeSinceLastBoost = 0;
-                RocketAnimationPlayer.Play("boost");
-            }
-
-            GetNode<Label>("Info").Text = $"Velocity:{velocity}\nFuelRemaining:{fuelRemaining}\nPendingFuel:{pendingFuel}\nTimeSinceLastBoost:{timeSinceLastBoost}\nIsUserHoldingDown:{isUserHoldingDown}";
+            UpdateHud();
         }
 
         public override void _Input(InputEvent inputEvent)
         {
             if (inputEvent.IsActionPressed("restart"))
                 GetTree().ReloadCurrentScene();
+        }
 
-            if (!isGameOver && inputEvent is InputEventScreenTouch touchEvent && timeSinceLastBoost > COOLDOWN_TIME)
-            {
-                if (touchEvent.Pressed && fuelRemaining > 0)
-                {
-                    isUserHoldingDown = true;
-                    RocketAnimationPlayer.Play("holding");
-                }
-                else
-                {
-                    isUserHoldingDown = false;
-                }
-            }
+        private void UpdateHud()
+        {
+            // TODO: background offset
+            StarsParallax.ScrollOffset = new Vector2(0, altitude);
+            AltitudeProgressBar.Value = altitude;
+            AltitudeLabel.Text = $"{(int)altitude}m";
+
+            // TODO: should be removed or hidden
+            GetNode<Label>("Info").Text = $"Velocity:{velocity}\nFuelRemaining:{fuelRemaining}";
         }
 
         private void EndGame()
         {
-            isGameOver = true;
             altitude = 0;
         }
     }
