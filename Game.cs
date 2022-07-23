@@ -65,7 +65,7 @@ namespace LunarLander
             }
             else if (pendingFuelToBurn > 0)
             {
-                Logic.BurnFuel(pendingFuelToBurn);
+                Logic.BurnFuel((int)pendingFuelToBurn);
                 pendingFuelToBurn = 0;
                 RocketAnimationPlayer.Play("boost");
 

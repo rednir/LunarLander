@@ -10,10 +10,10 @@ namespace LunarLander
 
         public float Altitude { get; private set; } = 1000;
 
-        public float FuelRemaining { get; private set; } = 1000;
+        public int FuelRemaining { get; private set; } = 1000;
 
         /// <Summary>Continues the game by one in-game second.</Summary>
-        public void BurnFuel(float fuelToBurn)
+        public void BurnFuel(int fuelToBurn)
         {
             if (fuelToBurn > FuelRemaining)
                 fuelToBurn = FuelRemaining;
