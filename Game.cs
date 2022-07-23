@@ -66,7 +66,7 @@ namespace LunarLander
             {
                 // Don't start increasing pending fuel immediately, so
                 // it's easier for the user to burn zero fuel.
-                pendingFuelToBurn += pendingFuelToBurn > 0.03 ? 2 : 0.001f;
+                pendingFuelToBurn += pendingFuelToBurn > 0.5 ? 1.5f : 0.03f;
                 PendingFuelLabel.Text = "-" + Math.Floor(pendingFuelToBurn);
                 RocketAnimationPlayer.Play("holding");
                 HudAnimationPlayer.Play("holding");
