@@ -15,9 +15,13 @@ namespace LunarLander
 
         private AnimationPlayer RocketAnimationPlayer;
 
+        private AnimationPlayer HudAnimationPlayer;
+
         private ProgressBar AltitudeProgressBar;
 
         private Label AltitudeLabel;
+
+        private Label PendingFuelLabel;
 
         private bool isUserHoldingDown;
 
@@ -41,8 +45,10 @@ namespace LunarLander
             StarsParallax = GetNode<ParallaxBackground>("StarsParallax");
             Background = GetNode<Sprite>("BackgroundLayer/Background");
             RocketAnimationPlayer = GetNode<AnimationPlayer>("Rocket/AnimationPlayer");
+            HudAnimationPlayer = GetNode<AnimationPlayer>("HUD/AnimationPlayer");
             AltitudeProgressBar = GetNode<ProgressBar>("HUD/Altitude/ProgressBar");
             AltitudeLabel = GetNode<Label>("HUD/Altitude/Label");
+            PendingFuelLabel = GetNode<Label>("HUD/PendingFuel");
 
             AltitudeProgressBar.MaxValue = 1000;
             StarsParallax.ScrollOffset = new Vector2(0, Logic.Altitude);
@@ -61,13 +67,16 @@ namespace LunarLander
                 // Don't start increasing pending fuel immediately, so
                 // it's easier for the user to burn zero fuel.
                 pendingFuelToBurn += pendingFuelToBurn > 0.03 ? 2 : 0.001f;
+                PendingFuelLabel.Text = "-" + Math.Floor(pendingFuelToBurn);
                 RocketAnimationPlayer.Play("holding");
+                HudAnimationPlayer.Play("holding");
             }
             else if (pendingFuelToBurn > 0)
             {
                 Logic.BurnFuel((int)pendingFuelToBurn);
                 pendingFuelToBurn = 0;
                 RocketAnimationPlayer.Play("boost");
+                HudAnimationPlayer.Play("boost");
 
                 movingTime = 0;
                 SetPhysicsProcess(true);
