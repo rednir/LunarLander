@@ -99,7 +99,7 @@ namespace LunarLander
             AltitudeProgressBar.Value = Logic.Altitude;
             AltitudeLabel.Text = $"{(int)Logic.Altitude}m";
 
-            PendingFuelLabel.Text = pendingFuel > 1 ? ((int)pendingFuel).ToString() : string.Empty;
+            PendingFuelLabel.Text = pendingFuel > 1 ? $"-{(int)pendingFuel}" : string.Empty;
 
             // TODO: should be removed or hidden
             GetNode<Label>("HUD/Info").Text = $"Velocity:{Logic.Velocity}\nFuelRemaining:{Logic.FuelRemaining}\npendingFuel:{pendingFuel}";
