@@ -17,6 +17,8 @@ namespace LunarLander
 
         private TextureRect Rocket;
 
+        private Label PendingFuelLabel;
+
         private AnimationPlayer RocketAnimationPlayer;
 
         private AnimationPlayer HUDAnimationPlayer;
@@ -32,6 +34,7 @@ namespace LunarLander
         public override void _Ready()
         {
             Rocket = GetNode<TextureRect>("Rocket");
+            PendingFuelLabel = GetNode<Label>("Rocket/PendingFuelLabel");
             RocketAnimationPlayer = GetNode<AnimationPlayer>("Rocket/AnimationPlayer");
             HUDAnimationPlayer = GetNode<AnimationPlayer>("HUD/AnimationPlayer");
             AltitudeProgressBar = GetNode<ProgressBar>("HUD/Altitude/ProgressBar");
@@ -95,6 +98,8 @@ namespace LunarLander
         {
             AltitudeProgressBar.Value = Logic.Altitude;
             AltitudeLabel.Text = $"{(int)Logic.Altitude}m";
+
+            PendingFuelLabel.Text = pendingFuel > 1 ? ((int)pendingFuel).ToString() : string.Empty;
 
             // TODO: should be removed or hidden
             GetNode<Label>("HUD/Info").Text = $"Velocity:{Logic.Velocity}\nFuelRemaining:{Logic.FuelRemaining}\npendingFuel:{pendingFuel}";
