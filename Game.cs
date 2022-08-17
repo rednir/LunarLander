@@ -7,9 +7,15 @@ namespace LunarLander
     {
         private const int FUEL_PENDING_SPEED = 50;
 
+        private const int ALTITUDE_MULTIPLIER = 10;
+
         private readonly GameLogic Logic = new GameLogic();
 
+        private float RocketPosition => -Logic.Altitude * ALTITUDE_MULTIPLIER;
+
         private TextureRect Rocket;
+
+        private Sprite Moon;
 
         private AnimationPlayer RocketAnimationPlayer;
 
@@ -24,12 +30,13 @@ namespace LunarLander
         public override void _Ready()
         {
             Rocket = GetNode<TextureRect>("Rocket");
+            Moon = GetNode<Sprite>("Moon");
             RocketAnimationPlayer = GetNode<AnimationPlayer>("Rocket/AnimationPlayer");
             AltitudeProgressBar = GetNode<ProgressBar>("HUD/Altitude/ProgressBar");
             AltitudeLabel = GetNode<Label>("HUD/Altitude/Label");
 
             AltitudeProgressBar.MaxValue = 1000;
-            Rocket.RectPosition = new Vector2(Rocket.RectPosition.x, -Logic.Altitude);
+            Rocket.RectPosition = new Vector2(Rocket.RectPosition.x, RocketPosition);
         }
 
         public override void _Process(float delta)
@@ -62,9 +69,9 @@ namespace LunarLander
 
                     Logic.Burn((int)pendingFuel);
                     GetTree().CreateTween()
-                        .TweenProperty(Rocket, "rect_position", new Vector2(Rocket.RectPosition.x, -Logic.Altitude), 0.5f)
+                        .TweenProperty(Rocket, "rect_position", new Vector2(Rocket.RectPosition.x, RocketPosition), 0.75f)
                         .SetTrans(Tween.TransitionType.Quart)
-                        .SetEase(Tween.EaseType.Out);
+                        .SetEase(Tween.EaseType.In);
                     pendingFuel = 0;
                 }
             }
@@ -72,7 +79,7 @@ namespace LunarLander
 
         private void UpdateHud()
         {
-            AltitudeProgressBar.Value = -Rocket.RectPosition.y;
+            AltitudeProgressBar.Value = -Rocket.RectPosition.y / ALTITUDE_MULTIPLIER;
             AltitudeLabel.Text = $"{(int)Logic.Altitude}m";
 
             // TODO: should be removed or hidden
