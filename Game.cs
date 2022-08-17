@@ -29,6 +29,7 @@ namespace LunarLander
             AltitudeLabel = GetNode<Label>("HUD/Altitude/Label");
 
             AltitudeProgressBar.MaxValue = 1000;
+            Rocket.RectPosition = new Vector2(Rocket.RectPosition.x, -Logic.Altitude);
         }
 
         public override void _Process(float delta)
@@ -61,7 +62,7 @@ namespace LunarLander
 
                     Logic.Burn((int)pendingFuel);
                     GetTree().CreateTween()
-                        .TweenProperty(Rocket, "rect_position", new Vector2(Rocket.RectPosition.x, GameLogic.INITIAL_ALTITUDE - Logic.Altitude), 0.5f)
+                        .TweenProperty(Rocket, "rect_position", new Vector2(Rocket.RectPosition.x, -Logic.Altitude), 0.5f)
                         .SetTrans(Tween.TransitionType.Quart)
                         .SetEase(Tween.EaseType.Out);
                     pendingFuel = 0;
@@ -71,7 +72,7 @@ namespace LunarLander
 
         private void UpdateHud()
         {
-            AltitudeProgressBar.Value = Logic.Altitude;
+            AltitudeProgressBar.Value = -Rocket.RectPosition.y;
             AltitudeLabel.Text = $"{(int)Logic.Altitude}m";
 
             // TODO: should be removed or hidden
