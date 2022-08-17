@@ -12,12 +12,10 @@ namespace LunarLander
         private readonly GameLogic Logic = new GameLogic();
 
         private float RocketPosition => -Logic.Altitude * ALTITUDE_MULTIPLIER;
-        
+
         private bool IsGameOver => Logic.Altitude <= 0;
 
         private TextureRect Rocket;
-
-        private Sprite Moon;
 
         private AnimationPlayer RocketAnimationPlayer;
 
@@ -32,7 +30,6 @@ namespace LunarLander
         public override void _Ready()
         {
             Rocket = GetNode<TextureRect>("Rocket");
-            Moon = GetNode<Sprite>("Moon");
             RocketAnimationPlayer = GetNode<AnimationPlayer>("Rocket/AnimationPlayer");
             AltitudeProgressBar = GetNode<ProgressBar>("HUD/Altitude/ProgressBar");
             AltitudeLabel = GetNode<Label>("HUD/Altitude/Label");
@@ -50,7 +47,7 @@ namespace LunarLander
                 return;
             }
 
-            if (isHolding)
+            if (isHolding && pendingFuel < Logic.FuelRemaining)
                 pendingFuel += delta * FUEL_PENDING_SPEED;
 
             UpdateHud();
