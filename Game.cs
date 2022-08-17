@@ -5,99 +5,63 @@ namespace LunarLander
 {
     public class Game : Node
     {
-        private const float TOTAL_MOVING_TIME = 0.8f;
+        private const int FUEL_PENDING_SPEED = 100;
+
+        private const int ALTITUDE_MULTIPLIER = 10;
 
         private readonly GameLogic Logic = new GameLogic();
 
-        private ParallaxBackground StarsParallax;
+        private float RocketPosition => -Logic.Altitude * ALTITUDE_MULTIPLIER;
 
-        private Sprite Background;
+        private bool IsGameWin => Logic.Velocity <= 10;
+
+        private TextureRect Rocket;
+
+        private Label PendingFuelLabel;
 
         private AnimationPlayer RocketAnimationPlayer;
 
-        private AnimationPlayer HudAnimationPlayer;
+        private AnimationPlayer HUDAnimationPlayer;
 
         private ProgressBar AltitudeProgressBar;
 
         private Label AltitudeLabel;
 
-        private Label PendingFuelLabel;
+        private bool isHolding;
 
-        private bool isUserHoldingDown;
-
-        private float pendingFuelToBurn;
-
-        private float movingTime;
-
-        private GameState State = GameState.Pending;
-
-        private enum GameState
-        {
-            Pending,
-            Moving,
-            Over
-        }
+        private float pendingFuel;
 
         public override void _Ready()
         {
-            SetPhysicsProcess(false);
-
-            StarsParallax = GetNode<ParallaxBackground>("StarsParallax");
-            Background = GetNode<Sprite>("BackgroundLayer/Background");
+            Rocket = GetNode<TextureRect>("Rocket");
+            PendingFuelLabel = GetNode<Label>("Rocket/PendingFuelLabel");
             RocketAnimationPlayer = GetNode<AnimationPlayer>("Rocket/AnimationPlayer");
-            HudAnimationPlayer = GetNode<AnimationPlayer>("HUD/AnimationPlayer");
+            HUDAnimationPlayer = GetNode<AnimationPlayer>("HUD/AnimationPlayer");
             AltitudeProgressBar = GetNode<ProgressBar>("HUD/Altitude/ProgressBar");
             AltitudeLabel = GetNode<Label>("HUD/Altitude/Label");
-            PendingFuelLabel = GetNode<Label>("HUD/PendingFuel");
 
             AltitudeProgressBar.MaxValue = 1000;
-            StarsParallax.ScrollOffset = new Vector2(0, Logic.Altitude);
+            Rocket.RectPosition = new Vector2(Rocket.RectPosition.x, RocketPosition);
         }
 
         public override void _Process(float delta)
         {
             UpdateHud();
 
-            // TODO: only anim?
-            if (Logic.Altitude <= 0)
+            if (Logic.Altitude <= 0 && Rocket.RectPosition.y >= 0)
+            {
                 EndGame();
-
-            if (isUserHoldingDown && pendingFuelToBurn < Logic.FuelRemaining)
-            {
-                // Don't start increasing pending fuel immediately, so
-                // it's easier for the user to burn zero fuel.
-                pendingFuelToBurn += pendingFuelToBurn > 0.5 ? 1.5f : 0.03f;
-                PendingFuelLabel.Text = "-" + Math.Floor(pendingFuelToBurn);
-                RocketAnimationPlayer.Play("holding");
-                HudAnimationPlayer.Play("holding");
-            }
-            else if (pendingFuelToBurn > 0)
-            {
-                Logic.BurnFuel((int)pendingFuelToBurn);
-                pendingFuelToBurn = 0;
-                RocketAnimationPlayer.Play("boost");
-                HudAnimationPlayer.Play("boost");
-
-                movingTime = 0;
-                SetPhysicsProcess(true);
-                SetProcess(false);
-            }
-        }
-
-        public override void _PhysicsProcess(float delta)
-        {
-            UpdateHud();
-
-            if (movingTime > TOTAL_MOVING_TIME)
-            {
-                StarsParallax.ScrollOffset = new Vector2(0, Logic.Altitude);
-                SetPhysicsProcess(false);
-                SetProcess(true);
                 return;
             }
 
-            movingTime += delta;
-            StarsParallax.ScrollOffset -= new Vector2(0, Logic.Velocity * delta / TOTAL_MOVING_TIME);
+            if (isHolding && pendingFuel < Logic.FuelRemaining)
+            {
+                // Make it easier to use zero fuel.
+                if (pendingFuel < 0.5)
+                    pendingFuel += delta * 5;
+                else
+                    pendingFuel += delta * FUEL_PENDING_SPEED;
+            }
         }
 
         public override void _Input(InputEvent inputEvent)
@@ -105,8 +69,33 @@ namespace LunarLander
             if (inputEvent.IsActionPressed("restart"))
                 GetTree().ReloadCurrentScene();
 
+            if (Logic.Altitude <= 0)
+                return;
+
             if (inputEvent is InputEventScreenTouch touchEvent)
-                isUserHoldingDown = touchEvent.Pressed;
+            {
+                if (touchEvent.Pressed)
+                {
+                    RocketAnimationPlayer.Play("holding");
+                    isHolding = true;
+                }
+                else
+                {
+                    if (pendingFuel > 1)
+                        RocketAnimationPlayer.Play("boost");
+                    else
+                        RocketAnimationPlayer.Play("boost-no-fuel");
+
+                    isHolding = false;
+
+                    Logic.Burn((int)pendingFuel);
+                    GetTree().CreateTween()
+                        .TweenProperty(Rocket, "rect_position", new Vector2(Rocket.RectPosition.x, RocketPosition), 0.6f)
+                        .SetTrans(Tween.TransitionType.Quart)
+                        .SetEase(Tween.EaseType.In);
+                    pendingFuel = 0;
+                }
+            }
         }
 
         private void UpdateHud()
@@ -114,12 +103,32 @@ namespace LunarLander
             AltitudeProgressBar.Value = Logic.Altitude;
             AltitudeLabel.Text = $"{(int)Logic.Altitude}m";
 
+            PendingFuelLabel.Text = pendingFuel > 1 ? $"-{(int)pendingFuel}" : string.Empty;
+
             // TODO: should be removed or hidden
-            GetNode<Label>("Info").Text = $"Velocity:{Logic.Velocity}\nFuelRemaining:{Logic.FuelRemaining}\nPendingFuelToBurn:{pendingFuelToBurn}\nStarsParallax.ScrollOffset:{StarsParallax.ScrollOffset}";
+            GetNode<Label>("HUD/Info").Text = $"Velocity:{Logic.Velocity}\nFuelRemaining:{Logic.FuelRemaining}\npendingFuel:{pendingFuel}";
         }
 
         private void EndGame()
         {
+            SetProcess(false);
+
+            if (IsGameWin)
+            {
+                HUDAnimationPlayer.Play("win");
+            }
+            else
+            {
+                HUDAnimationPlayer.Play("lose");
+                RocketAnimationPlayer.Play("explode");
+            }
+
+            HUDAnimationPlayer.Connect("animation_finished", this, "OnGameOverAnimationFinished");
+        }
+
+        public void OnGameOverAnimationFinished(string _)
+        {
+            GetTree().ReloadCurrentScene();
         }
     }
 }
