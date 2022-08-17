@@ -62,7 +62,7 @@ script = ExtResource( 4 )
 layer = -100
 
 [node name="Background" type="Sprite" parent="BackgroundLayer"]
-position = Vector2( 366, 548 )
+position = Vector2( 366, 542 )
 scale = Vector2( 2.14634, 1.22927 )
 texture = ExtResource( 3 )
 
@@ -88,11 +88,22 @@ rect_rotation = 270.0
 theme = SubResource( 6 )
 percent_visible = false
 
+[node name="Info" type="Label" parent="HUD"]
+margin_left = 30.0
+margin_top = 28.0
+margin_right = 165.0
+margin_bottom = 110.0
+text = "Velocity:
+Altitude:
+FuelRemaining:
+PendingFuel:
+IsUserHoldingDown: "
+
 [node name="StarsParallax" type="ParallaxBackground" parent="."]
 layer = -99
 
 [node name="Layer1" type="ParallaxLayer" parent="StarsParallax"]
-motion_scale = Vector2( 1, 1.2 )
+motion_scale = Vector2( 1, 8 )
 motion_mirroring = Vector2( 360, 1560 )
 
 [node name="Sprite" type="Sprite" parent="StarsParallax/Layer1"]
@@ -103,7 +114,7 @@ texture = ExtResource( 1 )
 [node name="Layer2" type="ParallaxLayer" parent="StarsParallax"]
 modulate = Color( 1, 1, 1, 0.784314 )
 position = Vector2( -15, 2 )
-motion_scale = Vector2( 1, 0.9 )
+motion_scale = Vector2( 1, 5 )
 motion_offset = Vector2( 5, 2000 )
 motion_mirroring = Vector2( 0, 1560 )
 
@@ -111,17 +122,6 @@ motion_mirroring = Vector2( 0, 1560 )
 position = Vector2( 178, 877 )
 scale = Vector2( 0.220065, 0.221142 )
 texture = ExtResource( 1 )
-
-[node name="Info" type="Label" parent="."]
-margin_left = 30.0
-margin_top = 28.0
-margin_right = 165.0
-margin_bottom = 110.0
-text = "Velocity:
-Altitude:
-FuelRemaining:
-PendingFuel:
-IsUserHoldingDown: "
 
 [node name="Rocket" parent="." instance=ExtResource( 2 )]
 anchor_left = 0.5
@@ -137,3 +137,5 @@ margin_bottom = 363.0
 position = Vector2( 256, 408 )
 scale = Vector2( 4, 4 )
 current = true
+smoothing_enabled = true
+smoothing_speed = 3.0
