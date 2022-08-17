@@ -118,6 +118,13 @@ namespace LunarLander
                 HUDAnimationPlayer.Play("lose");
                 RocketAnimationPlayer.Play("explode");
             }
+
+            HUDAnimationPlayer.Connect("animation_finished", this, "OnGameOverAnimationFinished");
+        }
+
+        public void OnGameOverAnimationFinished(string _)
+        {
+            GetTree().ReloadCurrentScene();
         }
     }
 }
