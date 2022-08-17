@@ -13,7 +13,7 @@ namespace LunarLander
 
         private float RocketPosition => -Logic.Altitude * ALTITUDE_MULTIPLIER;
 
-        private bool IsGameOver => Logic.Altitude <= 0;
+        private bool IsGameWin => Logic.Velocity <= 10;
 
         private TextureRect Rocket;
 
@@ -40,17 +40,20 @@ namespace LunarLander
 
         public override void _Process(float delta)
         {
-            if (IsGameOver)
+            UpdateHud();
+
+            if (Logic.Altitude <= 0 && Rocket.RectPosition.y >= 0)
             {
                 EndGame();
                 SetProcess(false);
+
+                if (!IsGameWin)
+                    RocketAnimationPlayer.Play("explode");
                 return;
             }
 
             if (isHolding && pendingFuel < Logic.FuelRemaining)
                 pendingFuel += delta * FUEL_PENDING_SPEED;
-
-            UpdateHud();
         }
 
         public override void _Input(InputEvent inputEvent)
@@ -58,7 +61,7 @@ namespace LunarLander
             if (inputEvent.IsActionPressed("restart"))
                 GetTree().ReloadCurrentScene();
 
-            if (IsGameOver)
+            if (Logic.Altitude <= 0)
                 return;
 
             if (inputEvent is InputEventScreenTouch touchEvent)
@@ -75,7 +78,7 @@ namespace LunarLander
 
                     Logic.Burn((int)pendingFuel);
                     GetTree().CreateTween()
-                        .TweenProperty(Rocket, "rect_position", new Vector2(Rocket.RectPosition.x, RocketPosition), 0.75f)
+                        .TweenProperty(Rocket, "rect_position", new Vector2(Rocket.RectPosition.x, RocketPosition), 0.6f)
                         .SetTrans(Tween.TransitionType.Quart)
                         .SetEase(Tween.EaseType.In);
                     pendingFuel = 0;
@@ -85,7 +88,7 @@ namespace LunarLander
 
         private void UpdateHud()
         {
-            AltitudeProgressBar.Value = -Rocket.RectPosition.y / ALTITUDE_MULTIPLIER;
+            AltitudeProgressBar.Value = Logic.Altitude;
             AltitudeLabel.Text = $"{(int)Logic.Altitude}m";
 
             // TODO: should be removed or hidden
@@ -94,7 +97,6 @@ namespace LunarLander
 
         private void EndGame()
         {
-
         }
     }
 }
