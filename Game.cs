@@ -5,7 +5,7 @@ namespace LunarLander
 {
     public class Game : Node
     {
-        private const int FUEL_PENDING_SPEED = 50;
+        private const int FUEL_PENDING_SPEED = 100;
 
         private const int ALTITUDE_MULTIPLIER = 10;
 
@@ -52,7 +52,13 @@ namespace LunarLander
             }
 
             if (isHolding && pendingFuel < Logic.FuelRemaining)
-                pendingFuel += delta * FUEL_PENDING_SPEED;
+            {
+                // Make it easier to use zero fuel.
+                if (pendingFuel < 0.5)
+                    pendingFuel += delta * 5;
+                else
+                    pendingFuel += delta * FUEL_PENDING_SPEED;
+            }
         }
 
         public override void _Input(InputEvent inputEvent)
