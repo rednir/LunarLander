@@ -12,6 +12,8 @@ namespace LunarLander
         private readonly GameLogic Logic = new GameLogic();
 
         private float RocketPosition => -Logic.Altitude * ALTITUDE_MULTIPLIER;
+        
+        private bool IsGameOver => Logic.Altitude <= 0;
 
         private TextureRect Rocket;
 
@@ -41,8 +43,12 @@ namespace LunarLander
 
         public override void _Process(float delta)
         {
-            if (Logic.Altitude <= 0)
+            if (IsGameOver)
+            {
                 EndGame();
+                SetProcess(false);
+                return;
+            }
 
             if (isHolding)
                 pendingFuel += delta * FUEL_PENDING_SPEED;
@@ -55,9 +61,12 @@ namespace LunarLander
             if (inputEvent.IsActionPressed("restart"))
                 GetTree().ReloadCurrentScene();
 
+            if (IsGameOver)
+                return;
+
             if (inputEvent is InputEventScreenTouch touchEvent)
             {
-                if (touchEvent.Pressed)
+                if (touchEvent.Pressed && pendingFuel < Logic.FuelRemaining)
                 {
                     RocketAnimationPlayer.Play("holding");
                     isHolding = true;
@@ -88,6 +97,7 @@ namespace LunarLander
 
         private void EndGame()
         {
+
         }
     }
 }
