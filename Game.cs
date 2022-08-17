@@ -74,14 +74,18 @@ namespace LunarLander
 
             if (inputEvent is InputEventScreenTouch touchEvent)
             {
-                if (touchEvent.Pressed && pendingFuel < Logic.FuelRemaining)
+                if (touchEvent.Pressed)
                 {
                     RocketAnimationPlayer.Play("holding");
                     isHolding = true;
                 }
-                else if (pendingFuel > 0)
+                else
                 {
-                    RocketAnimationPlayer.Play("boost");
+                    if (pendingFuel > 1)
+                        RocketAnimationPlayer.Play("boost");
+                    else
+                        RocketAnimationPlayer.Play("boost-no-fuel");
+
                     isHolding = false;
 
                     Logic.Burn((int)pendingFuel);
