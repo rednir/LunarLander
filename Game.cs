@@ -19,6 +19,8 @@ namespace LunarLander
 
         private AnimationPlayer RocketAnimationPlayer;
 
+        private AnimationPlayer HUDAnimationPlayer;
+
         private ProgressBar AltitudeProgressBar;
 
         private Label AltitudeLabel;
@@ -31,6 +33,7 @@ namespace LunarLander
         {
             Rocket = GetNode<TextureRect>("Rocket");
             RocketAnimationPlayer = GetNode<AnimationPlayer>("Rocket/AnimationPlayer");
+            HUDAnimationPlayer = GetNode<AnimationPlayer>("HUD/AnimationPlayer");
             AltitudeProgressBar = GetNode<ProgressBar>("HUD/Altitude/ProgressBar");
             AltitudeLabel = GetNode<Label>("HUD/Altitude/Label");
 
@@ -45,10 +48,6 @@ namespace LunarLander
             if (Logic.Altitude <= 0 && Rocket.RectPosition.y >= 0)
             {
                 EndGame();
-                SetProcess(false);
-
-                if (!IsGameWin)
-                    RocketAnimationPlayer.Play("explode");
                 return;
             }
 
@@ -97,6 +96,17 @@ namespace LunarLander
 
         private void EndGame()
         {
+            SetProcess(false);
+
+            if (IsGameWin)
+            {
+                HUDAnimationPlayer.Play("win");
+            }
+            else
+            {
+                HUDAnimationPlayer.Play("lose");
+                RocketAnimationPlayer.Play("explode");
+            }
         }
     }
 }
