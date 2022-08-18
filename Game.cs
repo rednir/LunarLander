@@ -7,7 +7,7 @@ namespace LunarLander
     {
         private const int FUEL_PENDING_SPEED = 100;
 
-        private const int ALTITUDE_MULTIPLIER = 10;
+        private const int ALTITUDE_MULTIPLIER = 50;
 
         private readonly GameLogic Logic = new GameLogic();
 
