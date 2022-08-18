@@ -500,8 +500,8 @@ align = 2
 
 [node name="Results" parent="HUD" instance=ExtResource( 7 )]
 margin_left = -368.0
-margin_right = 1072.0
-margin_bottom = 3120.0
+margin_right = 1432.0
+margin_bottom = 3900.0
 
 [node name="StarsParallax" type="ParallaxBackground" parent="."]
 layer = -99
