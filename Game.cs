@@ -106,7 +106,7 @@ namespace LunarLander
             PendingFuelLabel.Text = pendingFuel > 1 ? $"-{(int)pendingFuel}" : string.Empty;
 
             // TODO: should be removed or hidden
-            GetNode<Label>("HUD/Info").Text = $"Velocity:{Logic.Velocity}\nFuelRemaining:{Logic.FuelRemaining}\npendingFuel:{pendingFuel}";
+            GetNode<Label>("HUD/Info").Text = $"SecondsPassed:{Logic.SecondsPassed}\nVelocity:{Logic.Velocity}\nFuelRemaining:{Logic.FuelRemaining}\npendingFuel:{pendingFuel}";
         }
 
         private void EndGame()

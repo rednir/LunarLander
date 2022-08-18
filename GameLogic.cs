@@ -4,13 +4,13 @@ namespace LunarLander
 {
     public class GameLogic
     {
-        public const float INITIAL_ALTITUDE = 1000;
-
         private const float FUEL_POWER = 0.15f;
+
+        public int SecondsPassed { get; private set; }
 
         public float Velocity { get; private set; } = 0;
 
-        public float Altitude { get; private set; } = INITIAL_ALTITUDE;
+        public float Altitude { get; private set; } = 1000;
 
         public int FuelRemaining { get; private set; } = 1000;
 
@@ -23,6 +23,8 @@ namespace LunarLander
             FuelRemaining -= fuelToBurn;
             Velocity += 1.6f - (fuelToBurn * FUEL_POWER);
             Altitude = Math.Max(0, Altitude - Velocity);
+
+            SecondsPassed++;
         }
     }
 }
