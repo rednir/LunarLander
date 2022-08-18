@@ -13,8 +13,6 @@ namespace LunarLander
 
         private float RocketPosition => -Logic.Altitude * ALTITUDE_MULTIPLIER;
 
-        private bool IsGameWin => Logic.Velocity <= 10;
-
         private TextureRect Rocket;
 
         private Label PendingFuelLabel;
@@ -26,6 +24,8 @@ namespace LunarLander
         private ProgressBar AltitudeProgressBar;
 
         private Label AltitudeLabel;
+
+        private Results Results;
 
         private bool isHolding;
 
@@ -39,6 +39,7 @@ namespace LunarLander
             HUDAnimationPlayer = GetNode<AnimationPlayer>("HUD/AnimationPlayer");
             AltitudeProgressBar = GetNode<ProgressBar>("HUD/Altitude/ProgressBar");
             AltitudeLabel = GetNode<Label>("HUD/Altitude/Label");
+            Results = GetNode<Results>("HUD/Results");
 
             AltitudeProgressBar.MaxValue = 1000;
             Rocket.RectPosition = new Vector2(Rocket.RectPosition.x, RocketPosition);
@@ -113,7 +114,7 @@ namespace LunarLander
         {
             SetProcess(false);
 
-            if (IsGameWin)
+            if (Logic.Velocity <= 10)
             {
                 HUDAnimationPlayer.Play("win");
             }
@@ -123,12 +124,7 @@ namespace LunarLander
                 RocketAnimationPlayer.Play("explode");
             }
 
-            HUDAnimationPlayer.Connect("animation_finished", this, "OnGameOverAnimationFinished");
-        }
-
-        public void OnGameOverAnimationFinished(string _)
-        {
-            GetTree().ReloadCurrentScene();
+            Results.SetText(Logic);
         }
     }
 }
