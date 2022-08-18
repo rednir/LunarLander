@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/holding.mp3-e374a81a92bff770d7d2f4e500c7b18d.mp3str"
+
+[deps]
+
+source_file="res://Resources/holding.mp3"
+dest_files=[ "res://.import/holding.mp3-e374a81a92bff770d7d2f4e500c7b18d.mp3str" ]
+
+[params]
+
+loop=false
+loop_offset=0
